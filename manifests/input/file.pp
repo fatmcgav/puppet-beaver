@@ -74,7 +74,7 @@ define beaver::input::file(
   }
 
   if $format {
-    validate_re($format, '^(string|json|json_raw|msgpack|raw)$')
+    validate_re($format, '^(string|json|json_raw|rawjson|msgpack|raw)$')
     $opt_format = "format: ${format}\n"
   }
 
