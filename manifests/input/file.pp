@@ -51,7 +51,9 @@ define beaver::input::file(
   $format                 = undef,
   $exclude                = undef,
   $sincedb_write_interval = undef,
-  $stat_interval          = undef
+  $stat_interval          = undef,
+  $multiline_regex_before = undef,
+  $multiline_regex_after  = undef,
 ) {
 
   validate_string($file)
@@ -94,7 +96,17 @@ define beaver::input::file(
     $opt_stat_interval = "stat_interval => ${stat_interval}\n"
   }
 
-  $content = "[${file}]\n${opt_tags}${opt_type}${opt_add_fields}${opt_format}${opt_sincedb_write_interval}${opt_stat_interval}\n"
+  if $multiline_regex_before {
+    validate_string($multiline_regex_before)
+    $opt_ml_before = "multiline_regex_before: ${multiline_regex_before}\n"
+  }
+
+  if $multiline_regex_after {
+    validate_string($multiline_regex_after)
+    $opt_ml_after = "multiline_regex_after: ${multiline_regex_after}\n"
+  }
+
+  $content = "[${file}]\n${opt_tags}${opt_type}${opt_add_fields}${opt_format}${opt_sincedb_write_interval}${opt_stat_interval}${opt_ml_before}${opt_ml_after}\n"
 
   concat::fragment { "input_file_${name}_${::fqdn}":
     target  => '/etc/beaver/beaver.conf',
