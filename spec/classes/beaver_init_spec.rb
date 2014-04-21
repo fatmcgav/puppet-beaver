@@ -16,7 +16,7 @@ describe 'beaver', :type => 'class' do
     it { should contain_class('beaver::service') }
 
     # package.pp
-    it { should contain_package('beaver') }
+    it { should contain_package('Beaver') }
 
     # service.pp
     it { should contain_service('beaver') }
@@ -39,7 +39,7 @@ describe 'beaver', :type => 'class' do
     it { should contain_class('beaver::service') }
 
     # package.pp
-    it { should contain_package('beaver') }
+    it { should contain_package('Beaver') }
 
     # service.pp
     it { should contain_service('beaver') }

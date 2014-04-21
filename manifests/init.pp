@@ -98,7 +98,7 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 class beaver(
-  $package_name       = [ 'beaver' ],
+  $package_name       = [ 'Beaver' ],
   $package_ensure     = 'present',
 
   $service_ensure     = 'running',
