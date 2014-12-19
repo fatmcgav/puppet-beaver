@@ -40,36 +40,31 @@
 #
 define beaver::output::sqs(
   $queue,
-  $access_key = '',
-  $secret_key = '',
-  $region     = ''
+  $access_key = undef,
+  $secret_key = undef,
+  $region     = undef,
 ) {
 
-  #### Validate parameters
-  if ($access_key != '') {
+  validate_string($queue)
+  $opt_queue = "sqs_aws_queue: ${queue}\n"
+
+  if $access_key {
     validate_string($access_key)
     $opt_access_key = "sqs_aws_access_key: ${access_key}\n"
   }
 
-  if ($secret_key != '') {
+  if $secret_key {
     validate_string($secret_key)
     $opt_secret_key = "sqs_aws_secret_key: ${secret_key}\n"
   }
 
-  if ($region != '') {
+  if $region {
     validate_string($region)
     $opt_region = "sqs_aws_region: ${region}\n"
   }
 
-  if ($queue != '') {
-    validate_string($queue)
-    $opt_queue = "sqs_aws_queue: ${queue}\n"
-  }
-
-  #### Create file fragment
-
-  file_fragment{"output_sqs_${::fqdn}":
-    tag     => "beaver_config_${::fqdn}",
+  concat::fragment { "output_sqs_${title}":
+    target  => '/etc/beaver/beaver.conf',
     content => "${opt_access_key}${opt_secret_key}${opt_region}${opt_queue}\n",
     order   => 20
   }

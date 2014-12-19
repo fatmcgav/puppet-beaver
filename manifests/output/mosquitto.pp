@@ -46,50 +46,43 @@
 #
 define beaver::output::mosquitto(
   $host,
-  $port      = '',
-  $clientid  = '',
-  $keepalive = '',
-  $topic     = ''
+  $port      = undef,
+  $clientid  = undef,
+  $keepalive = undef,
+  $topic     = undef,
 ) {
 
-  #### Validate parameters
-  if ($port != '') {
-    if ! is_numeric($port) {
-      fail("\"${port}\" is not a valid port parameter value")
-    } else {
-      $opt_port = "mqtt_port: ${port}\n"
-    }
+  if $port {
+    validate_re($port, '^\d+$')
+    $opt_port = "mqtt_port: ${port}\n"
   }
 
-  if ($keepalive != '') {
-    if ! is_numeric($keepalive) {
-      fail("\"${keepalive}\" is not a valid keepalive parameter value")
-    } else {
-      $opt_keepalive = "mqtt_keepalive: ${keepalive}\n"
-    }
+  if $keepalive {
+    validate_re($keepalive, '^\d+$')
+    $opt_keepalive = "mqtt_keepalive: ${keepalive}\n"
   }
 
-  if ($host != '') {
+  if $host {
     validate_string($host)
+    # XXX: is this supposed to be *not* separated by a space?
     $opt_host = "mqtt_host:${host}\n"
   }
 
-  if ($clientid != '') {
+  if $clientid {
     validate_string($clientid)
     $opt_clientid = "mqtt_clientid: ${clientid}\n"
   }
 
-  if ($topic != '') {
+  if $topic {
     validate_string($topic)
     $opt_topic = "mqtt_topic: ${topic}\n"
   }
 
-  #### Create file fragment
+  $content = "${opt_host}${opt_port}${opt_clientid}${opt_topic}${opt_keepalive}\n"
 
-  file_fragment{"output_mosquitto_${::fqdn}":
-    tag     => "beaver_config_${::fqdn}",
-    content => "${opt_host}${opt_port}${opt_clientid}${opt_topic}${opt_keepalive}\n",
+  concat::fragment{ "output_mosquitto_${::fqdn}":
+    target  => '/etc/beaver/beaver.conf',
+    content => $content,
     order   => 20
   }
-
 }

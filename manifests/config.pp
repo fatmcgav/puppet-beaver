@@ -33,19 +33,17 @@ class beaver::config {
     mode   => '0644'
   }
 
-  file_fragment { 'header':
-    tag     => "beaver_config_${::fqdn}",
+  concat::fragment { 'header':
+    target  => '/etc/beaver/beaver.conf',
     content => "[beaver]\n${beaver::config}\n",
     order   => 10
   }
 
-  file_concat { '/etc/beaver/beaver.conf':
-    tag     => "beaver_config_${::fqdn}",
+  concat { '/etc/beaver/beaver.conf':
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     notify  => Service['beaver'],
     require => File['/etc/beaver/']
   }
-
 }

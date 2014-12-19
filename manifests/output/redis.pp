@@ -46,32 +46,17 @@ define beaver::output::redis(
   $namespace = 'logstash:beaver'
 ) {
 
-  #### Validate parameters
-  if $host {
-    validate_string($host)
-  }
+  validate_string($host)
+  validate_re($port, '^\d+$')
+  validate_re($db, '^\d+$')
+  validate_string($namespace)
 
-  if ! is_numeric($port) {
-    fail("\"${port}\" is not a valid port parameter value")
-  }
+  $opt_url       = "redis_url: redis://${host}:${port}/${db}\n"
+  $opt_namespace = "redis_namespace: ${$namespace}\n"
 
-  if ! is_numeric($db) {
-    fail("\"${db}\" is not a valid db parameter value")
-  }
-
-  $opt_url = "redis_url: redis://${host}:${port}/${db}\n"
-
-  if ($namespace != '') {
-    validate_string($namespace)
-    $opt_namespace = "redis_namespace: ${$namespace}\n"
-  }
-
-  #### Create file fragment
-
-  file_fragment{ "output_redis_${::fqdn}":
-    tag     => "beaver_config_${::fqdn}",
+  concat::fragment { "output_redis_${title}":
+    target  => '/etc/beaver/beaver.conf',
     content => "${opt_url}${opt_namespace}\n",
     order   => 20
   }
-
 }

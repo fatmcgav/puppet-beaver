@@ -120,36 +120,14 @@ class beaver(
 
   #### Validate parameters
 
-  # ensure
-  if ! ($ensure in [ 'present', 'absent' ]) {
-    fail("\"${ensure}\" is not a valid ensure parameter value")
-  }
-
-  # autoupgrade
+  validate_re($ensure, '^(present|absent)$')
+  validate_re($status, '^(enabled|disabled|running|unmanaged)$')
+  validate_re($format, '^(json|msgpack|string|raw)$')
+  validate_re($transport, '^(redis|rabbitmq|zmq|udp|mqtt|sqs)$')
+  validate_re($respawn_delaw, '^\d+$')
+  validate_re($max_failures, '^\d+$')
   validate_bool($autoupgrade)
-
-  # service status
-  if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
-    fail("\"${status}\" is not a valid status parameter value")
-  }
-
-  if ! ($format in [ 'json', 'msgpack', 'string', 'raw' ]) {
-    fail("\"${format}\" is not a valid format parameter value")
-  }
-
-  if ! is_numeric($respawn_delay) {
-    fail("\"${respawn_delay}\" is not a valid respawn_delay parameter value")
-  }
-
-  if ! is_numeric($max_failure) {
-    fail("\"${max_failure}\" is not a valid max_failure parameter value")
-  }
-
   validate_string($hostname)
-
-  if ! ($transport in [ 'redis', 'rabbitmq', 'zmq', 'udp', 'mqtt', 'sqs' ]) {
-    fail("\"${transport}\" is not a valid transport parameter value")
-  }
 
   $config = "hostname: ${hostname}\nformat: ${format}\nrespawn_delay: ${respawn_delay}\nmax_failure: ${max_failure}\ntransport: ${transport}"
 

@@ -46,51 +46,37 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 define beaver::output::zeromq(
-  $host = '',
+  $host = undef,
   $port = 2120,
   $type = 'bind',
-  $hwm  = ''
+  $hwm  = undef,
 ) {
 
-  #### Validate parameters
+  validate_re($port, '^\d+$')
+  validate_re($type, '^(bind|connect)$')
 
-  if ( $hwm != '') {
-    if ! is_numeric($hwm) {
-      fail("\"${hwm}\" is not a valid hwm parameter value")
-    } else {
-      $opt_hwm = "zeromq_hwm: ${hwm}\n"
-    }
+  if $type == 'connect' and !$host {
+    fail('\'host\' variable is required when using the connect type')
   }
 
-  if ! is_numeric($port) {
-    fail("\"${port}\" is not a valid port parameter value")
+  if $hwm {
+    validate_re($hwm, '^\d+$')
+    $opt_hwm = "zeromq_hwm: ${hwm}\n"
   }
 
-  if ($host != '') {
+  if $host {
     validate_string($host)
   }
 
-  case $type {
-    'bind': {
-        $opt_url = "zeromq_address: tcp://*:${port}\n"
-    }
-    'connect': {
-      if ($host == '') {
-        fail('\'host\' variable is required when using the connect type')
-      }
-      $opt_url = "zeromq_address: tcp://${host}:${port}\n"
-    }
-    default: {
-      fail("\"${type}\" is not a valid type parameter value")
-    }
+  $opt_url = $type? {
+    'connect' => "zeromq_address: tcp://${host}:${port}\n",
+    default   => "zeromq_address: tcp://*:${port}\n",
   }
 
   $opt_type = "zeromq_bind: ${type}\n"
 
-  #### Create file fragment
-
-  file_fragment{ "output_zeromq_${::fqdn}":
-    tag     => "beaver_config_${::fqdn}",
+  concat::fragment { "output_zeromq_${title}":
+    target  => '/etc/beaver/beaver.conf',
     content => "${opt_url}${opt_type}${opt_hwm}\n",
     order   => 20
   }
