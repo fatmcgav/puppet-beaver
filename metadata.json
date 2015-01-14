@@ -3,22 +3,22 @@
   "version": "0.1.0",
   "author": "ispavailability",
   "summary": "Puppet module for Beaver",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "source": "https://github.com/electrical/puppet-beaver",
   "project_page": "https://github.com/electrical/puppet-beaver",
   "issues_url": "https://github.com/electrical/puppet-beaver/issues",
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
-      "version_requirement": ">= 4.5.0"
+      "version_requirement": "4.x"
     },
     {
       "name": "puppetlabs-concat",
-      "version_requirement": ">= 1.1.2"
+      "version_requirement": "1.1.x"
     },
     {
       "name": "stankevich-python",
-      "version_requirement": ">= 1.8.7"
+      "version_requirement": "1.8.x"
     }
   ]
 }

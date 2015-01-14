@@ -8,18 +8,20 @@ describe 'beaver', :type => 'class' do
       :operatingsystem => 'Debian',
       :osfamily        => 'Debian',
       :concat_basedir  => '/dne',
+      :id              => 'root',
+      :path            => '/bin:/usr/bin:/usr/local/bin'
     } end
 
     # init.pp
-    it { should contain_class('beaver::package') }
-    it { should contain_class('beaver::config') }
-    it { should contain_class('beaver::service') }
+    it { is_expected.to contain_class('beaver::package') }
+    it { is_expected.to contain_class('beaver::config') }
+    it { is_expected.to contain_class('beaver::service') }
 
     # package.pp
-    it { should contain_package('Beaver') }
+    it { is_expected.to contain_package('Beaver') }
 
     # service.pp
-    it { should contain_service('beaver') }
+    it { is_expected.to contain_service('beaver') }
 
     # config.pp
   
@@ -31,18 +33,20 @@ describe 'beaver', :type => 'class' do
       :operatingsystem => 'Redhat',
       :osfamily        => 'RedHat',
       :concat_basedir  => '/dne',
+      :id              => 'root',
+      :path            => '/bin:/usr/bin:/usr/local/bin'
     } end
 
     # init.pp
-    it { should contain_class('beaver::package') }
-    it { should contain_class('beaver::config') }
-    it { should contain_class('beaver::service') }
+    it { is_expected.to contain_class('beaver::package') }
+    it { is_expected.to contain_class('beaver::config') }
+    it { is_expected.to contain_class('beaver::service') }
 
     # package.pp
-    it { should contain_package('Beaver') }
+    it { is_expected.to contain_package('Beaver') }
 
     # service.pp
-    it { should contain_service('beaver') }
+    it { is_expected.to contain_service('beaver') }
 
     # config.pp
    
