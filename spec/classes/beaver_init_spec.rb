@@ -2,31 +2,12 @@ require 'spec_helper'
 
 describe 'beaver', :type => 'class' do
 
-  context "On Debian OS" do
+  context "On Debian" do
 
     let :facts do {
-      :operatingsystem => 'Debian'
-    } end
-   
-    # init.pp
-    it { should contain_class('beaver::package') }
-    it { should contain_class('beaver::config') }
-    it { should contain_class('beaver::service') }
-
-    # package.pp
-    it { should contain_package('beaver') }
-
-    # service.pp
-    it { should contain_service('beaver') }
-
-    # config.pp
-
-  end
-
-  context "On Ubuntu OS" do
-
-    let :facts do {
-      :operatingsystem => 'Ubuntu'
+      :operatingsystem => 'Debian',
+      :osfamily        => 'Debian',
+      :concat_basedir  => '/dne',
     } end
 
     # init.pp
@@ -44,10 +25,12 @@ describe 'beaver', :type => 'class' do
   
   end
 
-  context "On CentOS OS" do
+  context "On Redhat" do
 
     let :facts do {
-      :operatingsystem => 'CentOS'
+      :operatingsystem => 'Redhat',
+      :osfamily        => 'RedHat',
+      :concat_basedir  => '/dne',
     } end
 
     # init.pp
@@ -65,98 +48,5 @@ describe 'beaver', :type => 'class' do
    
   end
 
-  context "On RedHat OS" do
 
-    let :facts do {
-      :operatingsystem => 'Redhat'
-    } end
-
-    # init.pp
-    it { should contain_class('beaver::package') }
-    it { should contain_class('beaver::config') }
-    it { should contain_class('beaver::service') }
-
-    # package.pp
-    it { should contain_package('beaver') }
-
-    # service.pp
-    it { should contain_service('beaver') }
-
-    # config.pp
-    
-  end
-
-  context "On Fedora OS" do
-
-    let :facts do {
-      :operatingsystem => 'Fedora'
-    } end
-
-    # init.pp
-    it { should contain_class('beaver::package') }
-    it { should contain_class('beaver::config') }
-    it { should contain_class('beaver::service') }
-
-    # package.pp
-    it { should contain_package('beaver') }
-
-    # service.pp
-    it { should contain_service('beaver') }
-
-    # config.pp
-  
-  end
-
-  context "On Scientific OS" do
-
-    let :facts do {
-        :operatingsystem => 'Scientific'
-    } end
-
-    # init.pp
-    it { should contain_class('beaver::package') }
-    it { should contain_class('beaver::config') }
-    it { should contain_class('beaver::service') }
-
-    # package.pp
-    it { should contain_package('beaver') }
-
-    # service.pp
-    it { should contain_service('beaver') }
-
-    # config.pp
-   
-  end
-
-  context "On Amazon OS" do
-
-    let :facts do {
-      :operatingsystem => 'Amazon'
-    } end
-
-    # init.pp
-    it { should contain_class('beaver::package') }
-    it { should contain_class('beaver::config') }
-    it { should contain_class('beaver::service') }
-
-    # package.pp
-    it { should contain_package('beaver') }
-
-    # service.pp
-    it { should contain_service('beaver') }
-
-    # config.pp
-   
-  end
-
-  context "On an unknown OS" do
-
-    let :facts do {
-      :operatingsystem => 'Darwin'
-    } end
- 
-    it { expect { should raise_error(Puppet::Error) } }
-
-  end
- 
 end

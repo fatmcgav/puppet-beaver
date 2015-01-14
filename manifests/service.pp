@@ -28,51 +28,6 @@
 #
 class beaver::service {
 
-  #### Service management
-
-  # set params: in operation
-  if $beaver::ensure == 'present' {
-
-    case $beaver::status {
-      # make sure service is currently running, start it on boot
-      'enabled': {
-        $service_ensure = 'running'
-        $service_enable = true
-      }
-      # make sure service is currently stopped, do not start it on boot
-      'disabled': {
-        $service_ensure = 'stopped'
-        $service_enable = false
-      }
-      # make sure service is currently running, do not start it on boot
-      'running': {
-        $service_ensure = 'running'
-        $service_enable = false
-      }
-      # do not start service on boot, do not care whether currently running or not
-      'unmanaged': {
-        $service_ensure = undef
-        $service_enable = false
-      }
-      # unknown status
-      # note: don't forget to update the parameter check in init.pp if you
-      #       add a new or change an existing status.
-      default: {
-        fail("\"${beaver::status}\" is an unknown service status value")
-      }
-    }
-
-  # set params: removal
-  } else {
-
-    # make sure the service is stopped and disabled (the removal itself will be
-    # done by package.pp)
-    $service_ensure = 'stopped'
-    $service_enable = false
-
-  }
-
-  # Init script
   file { '/etc/init.d/beaver':
     ensure => present,
     owner  => 'root',
@@ -81,14 +36,13 @@ class beaver::service {
     source => "puppet:///modules/${module_name}/etc/init.d/beaver.${::osfamily}"
   }
 
-  # action
   service { 'beaver':
-    ensure     => $service_ensure,
-    enable     => $service_enable,
-    name       => $beaver::params::service_name,
-    hasstatus  => $beaver::params::service_hasstatus,
-    hasrestart => $beaver::params::service_hasrestart,
-    pattern    => $beaver::params::service_pattern,
+    ensure     => $beaver::service_ensure,
+    enable     => $beaver::service_enable,
+    name       => $beaver::service_name,
+    hasstatus  => $beaver::service_hasstatus,
+    hasrestart => $beaver::service_hasrestart,
+    pattern    => $beaver::service_pattern,
     require    => File['/etc/init.d/beaver']
   }
 

@@ -25,35 +25,11 @@
 class beaver::package {
 
   #### Package management
-
   include python
 
-  # set params: in operation
-  if $beaver::ensure == 'present' {
-
-    # Check if we want to install a specific version or not
-    if $beaver::version == false {
-
-      $package_ensure = $beaver::autoupgrade ? {
-        true  => 'latest',
-        false => 'present',
-      }
-
-    } else {
-
-      # install specific version
-      $package_ensure = $beaver::version
-
-    }
-
-  # set params: removal
-  } else {
-    $package_ensure = 'purged'
-  }
-
   # action
-  package { $beaver::params::package:
-    ensure   => $package_ensure,
+  package { $beaver::package_name:
+    ensure   => $beaver::package_ensure,
     provider => 'pip',
     require  => Class['python'],
   }

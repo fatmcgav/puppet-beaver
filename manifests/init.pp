@@ -7,49 +7,43 @@
 #
 # === Parameters
 #
-# [*ensure*]
-#   String. Controls if the managed resources shall be <tt>present</tt> or
-#   <tt>absent</tt>. If set to <tt>absent</tt>:
-#   * The managed software packages are being uninstalled.
-#   * Any traces of the packages will be purged as good as possible. This may
-#     include existing configuration files. The exact behavior is provider
-#     dependent. Q.v.:
-#     * Puppet type reference: {package, "purgeable"}[http://j.mp/xbxmNP]
-#     * {Puppet's package provider source code}[http://j.mp/wtVCaL]
-#   * System modifications (if any) will be reverted as good as possible
-#     (e.g. removal of created users, services, changed log settings, ...).
-#   * This is thus destructive and should be used with care.
+# [*package_name*]
+#   String (or Array). Controls if the name of the package.
+#   Defaults to <tt>[ 'beaver' ]</tt>.
+#
+# [*package_ensure*]
+#   String. Controls if the package shall be <tt>present</tt>,
+#   <tt>absent</tt>, <tt>latest</tt>, or a specific <tt>version</tt>
 #   Defaults to <tt>present</tt>.
 #
-# [*autoupgrade*]
-#   Boolean. If set to <tt>true</tt>, any managed package gets upgraded
-#   on each Puppet run when the package provider is able to find a newer
-#   version than the present one. The exact behavior is provider dependent.
-#   Q.v.:
-#   * Puppet type reference: {package, "upgradeable"}[http://j.mp/xbxmNP]
-#   * {Puppet's package provider source code}[http://j.mp/wtVCaL]
-#   Defaults to <tt>false</tt>.
+# [*service_name*]
+#   String. Controls if the name of the service.
+#   Defaults to <tt>beaver</tt>.
 #
-# [*status*]
-#   String to define the status of the service. Possible values:
-#   * <tt>enabled</tt>: Service is running and will be started at boot time.
-#   * <tt>disabled</tt>: Service is stopped and will not be started at boot
-#     time.
-#   * <tt>running</tt>: Service is running but will not be started at boot time.
-#     You can use this to start a service on the first Puppet run instead of
-#     the system startup.
-#   * <tt>unmanaged</tt>: Service will not be started at boot time and Puppet
-#     does not care whether the service is running or not. For example, this may
-#     be useful if a cluster management software is used to decide when to start
-#     the service plus assuring it is running on the desired node.
-#   Defaults to <tt>enabled</tt>. The singular form ("service") is used for the
-#   sake of convenience. Of course, the defined status affects all services if
-#   more than one is managed (see <tt>service.pp</tt> to check if this is the
-#   case).
+# [*service_ensure*]
+#   String. Controls if the service shall be <tt>running</tt>,
+#   <tt>stopped</tt>.
+#   Defaults to <tt>running</tt>.
 #
-# [*version*]
-#   String to set the specific version you want to install.
-#   Defaults to <tt>false</tt>.
+# [*service_enable*]
+#   Bool. Controls if the service shall be enabled (<tt>true</tt>),
+#   or disabled (<tt>false</tt>).
+#   Defaults to <tt>true</tt>.
+#
+# [*service_hasstatus*]
+#   Bool. Controls if the service has a status check (<tt>true</tt>),
+#   or not (<tt>false</tt>). This is platform dependent.
+#   Defaults to <tt>true</tt>.
+#
+# [*service_hasrestart*]
+#   Bool. Controls if the service can be restarted (<tt>true</tt>),
+#   or not (<tt>false</tt>). This is platform dependent.
+#   Defaults to <tt>true</tt>.
+#
+# [*service_pattern*]
+#   String. Controls the pattern which to search for, if the service cannot be
+#   restarted through the service, but has to be "killed".
+#   Defaults to <tt>beaver</tt>.
 #
 # [*format*]
 #   format to transfer in
@@ -75,16 +69,11 @@
 #   Default value: FQDN
 #   This variable is optional
 #
-# [*transport(]
+# [*transport*]
 #  Transport method to use
 #  Value can be any of: "redis", "rabbitmq", "zeromq", "udp"
 #  Default value: "redis"
 #  This variable is optional
-#
-# The default values for the parameters are set in beaver::params. Have
-# a look at the corresponding <tt>params.pp</tt> manifest file if you need more
-# technical information about them.
-#
 #
 # === Examples
 #
@@ -93,12 +82,14 @@
 #
 # * Removal/decommissioning:
 #     class { 'beaver':
-#       ensure => 'absent',
+#       package_ensure => 'absent',
+#       service_ensure => 'stopped',
+#       service_enable => false,
 #     }
 #
 # * Install everything but disable service(s) afterwards
 #     class { 'beaver':
-#       status => 'disabled',
+#       service_ensure => 'stopped',
 #     }
 #
 #
@@ -107,66 +98,41 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 class beaver(
-  $ensure        = $beaver::params::ensure,
-  $autoupgrade   = $beaver::params::autoupgrade,
-  $status        = $beaver::params::status,
-  $version       = false,
-  $format        = 'json',
-  $respawn_delay = 3,
-  $max_failure   = 7,
-  $hostname      = $::fqdn,
-  $transport     = 'redis'
-) inherits beaver::params {
+  $package_name       = [ 'beaver' ],
+  $package_ensure     = 'present',
+
+  $service_ensure     = 'running',
+  $service_enable     = true,
+  $service_name       = 'beaver',
+  $service_hasstatus  = true,
+  $service_hasrestart = true,
+  $service_pattern    = 'beaver',
+
+  $format             = 'json',
+  $respawn_delay      = 3,
+  $max_failure        = 7,
+  $hostname           = $::fqdn,
+  $transport          = 'redis'
+) {
 
   #### Validate parameters
 
-  validate_re($ensure, '^(present|absent)$')
-  validate_re($status, '^(enabled|disabled|running|unmanaged)$')
+  # n.b.: \d+\.\d+\.\d+ is specific to beaver, which has a very simple versioning scheme
+  validate_re($package_ensure, '^(present|absent|latest|\d+\.\d+\.\d+)$')
+
+  validate_re($service_ensure, '^(running|stopped)$')
   validate_re($format, '^(json|msgpack|string|raw)$')
   validate_re($transport, '^(redis|rabbitmq|zmq|udp|mqtt|sqs)$')
   validate_re($respawn_delay, '^\d+$')
   validate_re($max_failure, '^\d+$')
-  validate_bool($autoupgrade)
+  validate_bool($service_enable)
   validate_string($hostname)
 
   $config = "hostname: ${hostname}\nformat: ${format}\nrespawn_delay: ${respawn_delay}\nmax_failure: ${max_failure}\ntransport: ${transport}"
 
-  #### Manage actions
-
+  anchor {'beaver::end': } ->
+  class { 'beaver::package': } ->
+  class { 'beaver::config': } ~>
+  class { 'beaver::service': } ->
   anchor {'beaver::begin': }
-  anchor {'beaver::end': }
-
-  # package(s)
-  class { 'beaver::package': }
-
-  # configuration
-  class { 'beaver::config': }
-
-  # service(s)
-  class { 'beaver::service': }
-
-
-  #### Manage relationships
-
-  if $ensure == 'present' {
-    # we need the software before configuring it
-    Anchor['beaver::begin']
-    -> Class['beaver::package']
-    -> Class['beaver::config']
-
-    # we need the software and a working configuration before running a service
-    Class['beaver::package'] -> Class['beaver::service']
-    Class['beaver::config']  -> Class['beaver::service']
-
-    Class['beaver::service']
-    -> Anchor['beaver::end']
-  } else {
-
-    # make sure all services are getting stopped before software removal
-    Anchor['beaver::begin']
-    -> Class['beaver::service']
-    -> Class['beaver::package']
-    -> Anchor['beaver::end']
-  }
-
 }

@@ -15,13 +15,16 @@ Installation, make sure service is running and will be started at boot time:
 Removal/decommissioning:
 
      class { 'beaver':
-       ensure => 'absent',
+       package_ensure => 'absent',
+       service_ensure => 'stopped',
+       service_enable => false,
      }
 
 Install everything but disable service(s) afterwards:
 
      class { 'beaver':
-       status => 'disabled',
+       service_ensure => 'stopped',
+       service_enable => false,
      }
 
 ### Inputs
