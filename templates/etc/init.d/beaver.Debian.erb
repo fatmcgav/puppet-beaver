@@ -11,7 +11,8 @@
 
 
 BEAVER_NAME='beaver'
-BEAVER_CMD='beaver -c /etc/beaver/beaver.conf'
+BEAVER_BIN="<%= @virtualenv -%>/bin/beaver"
+BEAVER_CMD="${BEAVER_BIN} -c /etc/beaver/beaver.conf"
 BEAVER_PID='/var/run/logstash_beaver.pid'
 BEAVER_USER='root'
 BEAVER_LOG='/var/log/logstash_beaver.log'
@@ -22,7 +23,6 @@ export PATH
 IFS=$' \t\n'
 export IFS
 
-BEAVER_BIN="<%= @virtualenv -%>/bin/beaver"
 
 [ -r /etc/init.d/functions ] && . /etc/init.d/functions
 [ -r /lib/lsb/init-functions ] && . /lib/lsb/init-functions
@@ -32,11 +32,15 @@ do_start() {
     test -f "${BEAVER_BIN}" || exit 0
     if is_up
     then
-        echo $'Log Sender server daemon already started.'
+        echo 'Log Sender server daemon already started.'
         return 0
     fi
-    echo -n $"Log Sender server daemon: ${BEAVER_NAME}"
-    su - "${BEAVER_USER}" -s '/bin/bash' -c "${BEAVER_CMD} >> ${BEAVER_LOG} 2>&1 & echo \$! > ${BEAVER_PID}"
+    echo -n "Log Sender server daemon: ${BEAVER_NAME}"
+
+    # activate virutalenv
+    [ -r <%= @virtualenv -%>/bin/activate ] && . <%= @virtualenv -%>/bin/activate
+
+    su -m - "${BEAVER_USER}" -s '/bin/bash' -c "${BEAVER_CMD} >> ${BEAVER_LOG} 2>&1 & echo \$! > ${BEAVER_PID}"
     echo '.'
 }
 
@@ -44,10 +48,10 @@ do_stop() {
     test -f "${BEAVER_BIN}" || exit 0
     if ! is_up
     then
-        echo $'Log Sender server daemon already stopped.'
+        echo 'Log Sender server daemon already stopped.'
         return 0
     fi
-    echo -n $"Stopping Log Sender server daemon: ${BEAVER_NAME}"
+    echo -n "Stopping Log Sender server daemon: ${BEAVER_NAME}"
     do_kill
     while is_up
     do
@@ -91,7 +95,7 @@ do_status() {
 }
 
 do_usage() {
-    echo $"Usage: $0 {start | stop | restart | force-reload | status}"
+    echo "Usage: $0 {start | stop | restart | force-reload | status}"
     exit 1
 }
 

@@ -38,7 +38,11 @@ start() {
 
     umask 077
 
-    echo -n $"Starting beaver: "
+    echo -n "Starting beaver: "
+
+    # activate virutalenv
+    [ -r <%= @virtualenv -%>/bin/activate ] && . <%= @virtualenv -%>/bin/activate
+
     daemon $exec -D -P $PIDFILE -c $BEAVER_CONFIG $BEAVER_OPTIONS
     RETVAL=$?
     echo
@@ -46,7 +50,7 @@ start() {
     return $RETVAL
 }
 stop() {
-    echo -n $"Shutting down beaver: "
+    echo -n "Shutting down beaver: "
     killproc -p "$PIDFILE" $exec
     RETVAL=$?
     echo
@@ -84,7 +88,7 @@ case "$1" in
         restart
         ;;
   *)
-        echo $"Usage: $0 {start|stop|restart|condrestart|try-restart|reload|force-reload|status}"
+        echo "Usage: $0 {start|stop|restart|condrestart|try-restart|reload|force-reload|status}"
         exit 3
 esac
 
