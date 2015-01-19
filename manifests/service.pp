@@ -29,11 +29,11 @@
 class beaver::service {
 
   file { '/etc/init.d/beaver':
-    ensure => present,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-    source => "puppet:///modules/${module_name}/etc/init.d/beaver.${::osfamily}"
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => template("${module_name}/etc/init.d/beaver.${::osfamily}.erb"),
   }
 
   service { 'beaver':

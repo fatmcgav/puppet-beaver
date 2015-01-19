@@ -22,7 +22,7 @@ export PATH
 IFS=$' \t\n'
 export IFS
 
-BEAVER_BIN="$(which "${BEAVER_NAME}")"
+BEAVER_BIN="<%= @virtualenv -%>/bin/beaver"
 
 [ -r /etc/init.d/functions ] && . /etc/init.d/functions
 [ -r /lib/lsb/init-functions ] && . /lib/lsb/init-functions

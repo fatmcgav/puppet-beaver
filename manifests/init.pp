@@ -114,6 +114,7 @@ class beaver(
   $hostname           = $::fqdn,
   $transport          = 'redis',
   $logstash_version   = '0',
+  $virtualenv         = '/opt/Beaver',
 ) {
 
   #### Validate parameters

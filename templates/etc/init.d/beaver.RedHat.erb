@@ -21,7 +21,7 @@ RETVAL=0
 PIDFILE=/var/run/beaver.pid
 
 prog=beaver
-exec=/usr/bin/beaver
+exec=<%= @virtualenv -%>/bin/beaver
 lockfile=/var/lock/subsys/$prog
 
 # Source config

@@ -24,14 +24,44 @@
 #
 class beaver::package {
 
-  #### Package management
-  include python
+  $venv_ensure = $beaver::package_ensure ? {
+    /^(present|absent)$/ => $beaver::package_ensure,
+    default              => 'present',
+  }
 
-  # action
-  package { $beaver::package_name:
-    ensure   => $beaver::package_ensure,
-    provider => 'pip',
-    require  => Class['python'],
+  # setting this absent, will automatically remove the packages :)
+  python::virtualenv { $beaver::virtualenv:
+    ensure     => $venv_ensure,
+  }
+
+  if $venv_ensure != 'absent' {
+
+    $beaver_pkg = $beaver::package_ensure ? {
+      /^(present|absent|latest)$/ => $beaver::package_name,
+      default                     => "${beaver::package_name}==${beaver::package_ensure}",
+    }
+
+    ###
+    # XXX THIS IS A TEMPORARY HACK UNTIL BEAVER 34.0.0 IS RELEASED
+    # PLEAES REMOVE AFTERWARDS
+    python::pip { 'python-daemon':
+      ensure     => '1.6.1',
+      virtualenv => $beaver::virtualenv,
+    } ->
+    python::pip { $beaver_pkg:
+      ensure     => $venv_ensure,
+      virtualenv => $beaver::virtualenv,
+    }
+
+    if $beaver::transport == 'zmq' {
+      ###
+      # XXX WHY DOES BEAVER DEPEND ON A VERSION OF PYZMQ THAT IS 12 VERSIONS
+      # BEHIND THE CURRENT ONE?
+      python::pip { 'pyzmq==2.1.11':
+        ensure     => $venv_ensure,
+        virtualenv => $beaver::virtualenv,
+      }
+    }
   }
 
 }

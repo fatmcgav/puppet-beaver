@@ -5,11 +5,12 @@ describe 'beaver', :type => 'class' do
   context "On Debian" do
 
     let :facts do {
-      :operatingsystem => 'Debian',
-      :osfamily        => 'Debian',
-      :concat_basedir  => '/dne',
-      :id              => 'root',
-      :path            => '/bin:/usr/bin:/usr/local/bin'
+      :operatingsystem    => 'Debian',
+      :osfamily           => 'Debian',
+      :concat_basedir     => '/dne',
+      :id                 => 'root',
+      :path               => '/bin:/usr/bin:/usr/local/bin',
+      :virtualenv_version => '1.11.6',
     } end
 
     # init.pp
@@ -18,7 +19,7 @@ describe 'beaver', :type => 'class' do
     it { is_expected.to contain_class('beaver::service') }
 
     # package.pp
-    it { is_expected.to contain_package('Beaver') }
+    it { is_expected.to contain_python__pip('Beaver') }
 
     # service.pp
     it { is_expected.to contain_service('beaver') }
@@ -30,11 +31,12 @@ describe 'beaver', :type => 'class' do
   context "On Redhat" do
 
     let :facts do {
-      :operatingsystem => 'Redhat',
-      :osfamily        => 'RedHat',
-      :concat_basedir  => '/dne',
-      :id              => 'root',
-      :path            => '/bin:/usr/bin:/usr/local/bin'
+      :operatingsystem    => 'Redhat',
+      :osfamily           => 'RedHat',
+      :concat_basedir     => '/dne',
+      :id                 => 'root',
+      :path               => '/bin:/usr/bin:/usr/local/bin',
+      :virtualenv_version => '1.11.6',
     } end
 
     # init.pp
@@ -43,7 +45,7 @@ describe 'beaver', :type => 'class' do
     it { is_expected.to contain_class('beaver::service') }
 
     # package.pp
-    it { is_expected.to contain_package('Beaver') }
+    it { is_expected.to contain_python__pip('Beaver') }
 
     # service.pp
     it { is_expected.to contain_service('beaver') }
