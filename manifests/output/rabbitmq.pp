@@ -37,6 +37,17 @@
 #   Queue name
 #   Value type is string
 #   Default value: logstash-queue
+#
+# [*queue_durable*]
+#   Is the queue durable
+#   Value can be any of: "1", "0"
+#   Default value: 0
+#   This variable is optional
+#
+# [*queue_ha*]
+#   Should the queue be highly available
+#   Value can be any of: "1", "0"
+#   Default value: 0
 #   This variable is optional
 #
 # [*exchange*]
@@ -80,6 +91,8 @@ define beaver::output::rabbitmq(
   $username         = undef,
   $password         = undef,
   $queue            = undef,
+  $queue_durable    = undef,
+  $queue_ha         = undef,
   $exchange         = undef,
   $exchange_durable = undef,
   $exchange_type    = undef,
@@ -114,6 +127,20 @@ define beaver::output::rabbitmq(
     $opt_queue = "rabbitmq_queue: ${queue}\n"
   }
 
+  if ($queue_durable != '') {
+    if ! ($queue_durable in ['1', '0']) {
+      fail("beaver::output::rabbitmq[${title}]: '${queue_durable}' is not a valid queue_durable parameter value")
+    }
+    $opt_queue_durable = "rabbitmq_queue_durable: ${queue_durable}\n"
+  }
+
+  if ($queue_ha != '') {
+    if ! ($queue_ha in ['1', '0']) {
+      fail("beaver::output::rabbitmq[${title}]: '${queue_ha}' is not a valid queue_ha parameter value")
+    }
+    $opt_queue_ha = "rabbitmq_ha_queue: ${queue_ha}\n"
+  }
+
   if $exchange {
     validate_string($exchange)
     $opt_exchange = "rabbitmq_exchange: ${exchange}\n"
@@ -136,7 +163,7 @@ define beaver::output::rabbitmq(
     $opt_exchange_durable = "rabbitmq_exchange_durable: ${exchange_durable}\n"
   }
 
-  $content = "${opt_host}${opt_port}${opt_vhost}${opt_username}${opt_password}${opt_queue}${opt_exchange}${opt_exchange_type}${opt_exchange_durable}${opt_key}\n"
+  $content = "${opt_host}${opt_port}${opt_vhost}${opt_username}${opt_password}${opt_queue}${opt_queue_durable}${opt_queue_ha}${opt_exchange}${opt_exchange_type}${opt_exchange_durable}${opt_key}\n"
 
   concat::fragment { "output_rabbitmq_${title}":
     target  => '/etc/beaver/beaver.conf',
