@@ -54,17 +54,20 @@ class beaver::service {
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       onlyif  => 'test -e /var/run/beaver.pid',
       command => '/etc/init.d/beaver stop || kill $(cat /var/run/beaver.pid) && rm -f /var/run/beaver.pid',
-    }->
+    }
+
     file { '/etc/init.d/beaver':
       ensure => absent,
-    }->
+    }
+
     file { '/lib/systemd/system/beaver.service':
       ensure  => file,
       owner   => 'root',
       group   => 'root',
       content => template("${module_name}/systemd/beaver.service.erb"),
-    } ~>
-    Exec['systemctl-daemon-reload']
+      notify  => Exec['systemctl-daemon-reload'],
+      before  => Service['beaver']
+    }
 
     service { 'beaver':
       ensure  => $beaver::service_ensure,
