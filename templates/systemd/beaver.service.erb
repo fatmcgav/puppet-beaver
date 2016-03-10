@@ -1,0 +1,11 @@
+[Unit]
+Description=Beaver Service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+Restart=always
+ExecStart=<%= @virtualenv -%>/bin/beaver -c /etc/beaver/beaver.conf -l /var/log/beaver.log
+
+[Install]
+WantedBy=multi-user.target

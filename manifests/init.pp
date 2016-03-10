@@ -98,24 +98,25 @@
 # * Richard Pijnenburg <mailto:richard@ispavailability.com>
 #
 class beaver(
-  $package_name       = [ 'Beaver' ],
-  $package_ensure     = 'present',
+  $package_name       = $beaver::params::package_name,
+  $package_ensure     = $beaver::params::package_ensure,
 
-  $service_ensure     = 'running',
-  $service_enable     = true,
-  $service_name       = 'beaver',
-  $service_hasstatus  = true,
-  $service_hasrestart = true,
-  $service_pattern    = 'beaver',
+  $service_ensure     = $beaver::params::service_ensure,
+  $service_enable     = $beaver::params::service_enable,
+  $service_name       = $beaver::params::service_name,
+  $service_provider   = $beaver::params::service_provider,
+  $service_hasstatus  = $beaver::params::service_hasstatus,
+  $service_hasrestart = $beaver::params::service_hasrestart,
+  $service_pattern    = $beaver::params::service_pattern,
 
-  $format             = 'json',
-  $respawn_delay      = 3,
-  $max_failure        = 7,
-  $hostname           = $::fqdn,
-  $transport          = 'redis',
-  $logstash_version   = '0',
-  $virtualenv         = '/opt/Beaver',
-) {
+  $format             = $beaver::params::format,
+  $respawn_delay      = $beaver::params::respawn_delay,
+  $max_failure        = $beaver::params::max_failure,
+  $hostname           = $beaver::params::hostname,
+  $transport          = $beaver::params::transport,
+  $logstash_version   = $beaver::params::logstash_version,
+  $virtualenv         = $beaver::params::virtualenv,
+) inherits beaver::params {
 
   #### Validate parameters
 
@@ -123,6 +124,8 @@ class beaver(
   validate_re($package_ensure, '^(present|absent|latest|\d+\.\d+\.\d+)$')
 
   validate_re($service_ensure, '^(running|stopped)$')
+  validate_re($service_provider, '^(init|systemd)$')
+
   validate_re($format, '^(json|msgpack|string|raw)$')
   validate_re($transport, '^(redis|rabbitmq|zmq|udp|mqtt|sqs)$')
   validate_re($respawn_delay, '^\d+$')
