@@ -54,6 +54,7 @@ class beaver::service {
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       onlyif  => 'test -e /var/run/beaver.pid',
       command => '/etc/init.d/beaver stop || kill $(cat /var/run/beaver.pid) && rm -f /var/run/beaver.pid',
+      before  => File['/etc/init.d/beaver']
     }
 
     file { '/etc/init.d/beaver':
