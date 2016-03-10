@@ -66,14 +66,13 @@ class beaver::service {
       group   => 'root',
       content => template("${module_name}/systemd/beaver.service.erb"),
       notify  => Exec['systemctl-daemon-reload'],
-      before  => Service['beaver']
     }
 
     service { 'beaver':
       ensure  => $beaver::service_ensure,
       enable  => $beaver::service_enable,
       name    => $beaver::service_name,
-      require => File['/lib/systemd/system/beaver.service']
+      require => [File['/lib/systemd/system/beaver.service'],Exec['systemctl-daemon-reload']]
     }
   }
 }
