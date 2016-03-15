@@ -23,7 +23,7 @@ class beaver::params {
   $respawn_delay    = 3
   $max_failure      = 7
   $hostname         = $::fqdn
-  $tranport         = 'redis'
+  $transport        = 'redis'
   $logstash_version = '0'
   $virtualenv       = '/opt/Beaver'
 
