@@ -112,6 +112,7 @@ class beaver(
   $format             = $beaver::params::format,
   $respawn_delay      = $beaver::params::respawn_delay,
   $max_failure        = $beaver::params::max_failure,
+  $queue_timeout      = $beaver::params::queue_timeout,
   $hostname           = $beaver::params::hostname,
   $transport          = $beaver::params::transport,
   $logstash_version   = $beaver::params::logstash_version,
@@ -129,12 +130,13 @@ class beaver(
   validate_re($format, '^(json|msgpack|string|raw)$')
   validate_re($transport, '^(redis|rabbitmq|zmq|udp|mqtt|sqs)$')
   validate_re($respawn_delay, '^\d+$')
+  validate_re($queue_timeout, '^\d+$')
   validate_re($logstash_version, '^(0|1)$')
   validate_re($max_failure, '^\d+$')
   validate_bool($service_enable)
   validate_string($hostname)
 
-  $config = "logstash_version: ${logstash_version}\nhostname: ${hostname}\nformat: ${format}\nrespawn_delay: ${respawn_delay}\nmax_failure: ${max_failure}\ntransport: ${transport}"
+  $config = "logstash_version: ${logstash_version}\nhostname: ${hostname}\nformat: ${format}\nrespawn_delay: ${respawn_delay}\nmax_failure: ${max_failure}\nqueue_timeout: ${queue_timeout}\ntransport: ${transport}"
 
   anchor {'beaver::end': } ->
   class { 'beaver::package': } ->

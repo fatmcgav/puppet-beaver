@@ -22,6 +22,7 @@ class beaver::params {
   $format           = 'json'
   $respawn_delay    = 3
   $max_failure      = 7
+  $queue_timeout    = 60
   $hostname         = $::fqdn
   $transport        = 'redis'
   $logstash_version = '0'
