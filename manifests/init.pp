@@ -129,10 +129,10 @@ class beaver(
 
   validate_re($format, '^(json|msgpack|string|raw)$')
   validate_re($transport, '^(redis|rabbitmq|zmq|udp|mqtt|sqs)$')
-  validate_re($respawn_delay, '^\d+$')
-  validate_re($queue_timeout, '^\d+$')
-  validate_re($logstash_version, '^(0|1)$')
-  validate_re($max_failure, '^\d+$')
+  validate_re("${respawn_delay}", '^\d+$')
+  validate_re("${queue_timeout}", '^\d+$')
+  validate_re("${logstash_version}", '^(0|1)$')
+  validate_re("${max_failure}", '^\d+$')
   validate_bool($service_enable)
   validate_string($hostname)
 

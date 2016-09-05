@@ -103,7 +103,7 @@ define beaver::output::rabbitmq(
   $opt_host = "rabbitmq_host: ${host}\n"
 
   if $port {
-    validate_re($port, '^\d+$')
+    validate_re("${port}", '^\d+$')
     $opt_port = "rabbitmq_port: ${port}\n"
   }
 
@@ -128,14 +128,14 @@ define beaver::output::rabbitmq(
   }
 
   if ($queue_durable != '') {
-    if ! ($queue_durable in ['1', '0']) {
+    if ! ("${queue_durable}" in ['1', '0']) {
       fail("beaver::output::rabbitmq[${title}]: '${queue_durable}' is not a valid queue_durable parameter value")
     }
     $opt_queue_durable = "rabbitmq_queue_durable: ${queue_durable}\n"
   }
 
   if ($queue_ha != '') {
-    if ! ($queue_ha in ['1', '0']) {
+    if ! ("${queue_ha}" in ['1', '0']) {
       fail("beaver::output::rabbitmq[${title}]: '${queue_ha}' is not a valid queue_ha parameter value")
     }
     $opt_queue_ha = "rabbitmq_ha_queue: ${queue_ha}\n"
@@ -157,7 +157,7 @@ define beaver::output::rabbitmq(
   }
 
   if ($exchange_durable != '') {
-    if ! ($exchange_durable in ['1', '0']) {
+    if ! ("${exchange_durable}" in ['1', '0']) {
       fail("beaver::output::rabbitmq[${title}]: '${exchange_durable}' is not a valid exchange_durable parameter value")
     }
     $opt_exchange_durable = "rabbitmq_exchange_durable: ${exchange_durable}\n"
