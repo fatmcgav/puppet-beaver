@@ -3,5 +3,6 @@ fixtures:
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
     concat: "https://github.com/puppetlabs/puppetlabs-concat.git"
     python: "https://github.com/stankevich/puppet-python.git"
+    epel: "https://github.com/stahnma/puppet-module-epel.git"
   symlinks:
     beaver: "#{source_dir}"
